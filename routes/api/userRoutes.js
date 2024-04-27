@@ -8,7 +8,7 @@
 //   deleteThought,
 //   friendUpdate,
 //   friendDelete,
-// } = require("../../controllers/userControllers.js");
+// } = require("../../controllers/userControllers");
 
 // // /api/users routes
 // router.route("/").get(getUsers).post(createUser);
