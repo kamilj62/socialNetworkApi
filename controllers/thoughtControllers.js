@@ -1,4 +1,4 @@
-const { Thought, Reaction } = require("../models");
+const { Thought, Reaction, User } = require("../models");
 
 module.exports = {
   // Get all thoughts
@@ -31,7 +31,14 @@ module.exports = {
   async createThought(req, res) {
     try {
       const thought = await Thought.create(req.body);
-      res.json(thought);
+
+      const user = await User.findByIdAndUpdate(
+        req.body.userId,
+        { $addToSet: { thoughts: thought._id } },
+        { runValidators: true, new: true }
+      );
+
+      return res.status(200).json({ thought, user });
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -59,25 +66,25 @@ module.exports = {
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndDelete({
-        _id: req.params.id,
+        _id: req.params.thoughtId,
       });
 
       if (!thought) {
-        return res.status(404).json({ message: "No thought with that ID" });
+        return res.status(404).json({ message: "No thought with that Id" });
       }
 
-      await Reaction.deleteMany({ _id: { $in: thought.reactions } });
-
-      return res.json({ message: "Thought and reactions deleted!" });
+      return res.json({
+        message: "Thought and associated reactions are deleted!",
+      });
     } catch (err) {
       return res.status(500).json(err);
     }
   },
   async postReactions(req, res) {
     try {
-      const reaction = await Reaction.findOneAndUpdate(
-        { _id: req.params.reactionId },
-        { $set: req.body },
+      const reaction = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $addToSet: { reactions: req.body } },
         { runValidators: true, new: true }
       );
 
@@ -92,9 +99,11 @@ module.exports = {
   },
   async deleteReactions(req, res) {
     try {
-      const reaction = await Reaction.findOneAndDelete({
-        _id: req.params.id,
-      });
+      const reaction = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { _id: req.params.reactionId } } },
+        { runValidators: true, new: true }
+      );
 
       if (!reaction) {
         return res.status(404).json({ message: "No reaction with that Id" });
