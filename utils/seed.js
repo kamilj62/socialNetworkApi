@@ -7,9 +7,10 @@ const connection = require("../config/connection");
 // Seed data
 const users = [
   {
+    friend: "Joe",
     username: "cassius",
     email: "cassius@gmail.com",
-    thought: ["cassius is a dufus"],
+    thoughts: "Cassius is a dufus",
   },
 ];
 

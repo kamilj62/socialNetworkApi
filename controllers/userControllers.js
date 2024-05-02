@@ -1,4 +1,3 @@
-const router = require("express").Router();
 const { Thought, User } = require("../models");
 
 module.exports = {
@@ -39,7 +38,7 @@ module.exports = {
     try {
       const user = await User.create(req.body);
 
-      return res.status(200).json({ user });
+      return res.status(200).json(user);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -82,7 +81,7 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  async friendUpdate(req, res) {
+  async addFriend(req, res) {
     try {
       const friend = await User.findOneAndUpdate(
         { _id: req.params.userId },
@@ -91,7 +90,7 @@ module.exports = {
       );
 
       if (!friend) {
-        return res.status(404).json({ message: "No reaction with this id!" });
+        return res.status(404).json({ message: "No friend with this id!" });
       }
 
       return res.json(friend);
@@ -99,7 +98,7 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  async deleteFriends(req, res) {
+  async friendDelete(req, res) {
     try {
       const friend = await User.findOneAndUpdate(
         { _id: req.params.userId },
@@ -117,5 +116,3 @@ module.exports = {
     }
   },
 };
-
-module.exports = router;
