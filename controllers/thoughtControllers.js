@@ -97,7 +97,7 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  async deleteReactions(req, res) {
+  async deleteReaction(req, res) {
     try {
       const reaction = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
@@ -106,11 +106,14 @@ module.exports = {
       );
 
       if (!reaction) {
-        return res.status(404).json({ message: "No reaction with that Id" });
+        return res
+          .status(404)
+          .json({ message: "Check thought and reaction Id" });
       }
 
-      return res.json({ message: "Reaction deleted successfully" });
+      return res.status(200).json(reaction);
     } catch (err) {
+      console.log(err);
       return res.status(500).json(err);
     }
   },

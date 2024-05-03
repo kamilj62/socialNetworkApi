@@ -24,7 +24,7 @@ module.exports = {
         .populate({ path: "friends", select: "-__v" });
 
       if (!user) {
-        return res.status(404).json({ message: "No user with that ID" });
+        return res.status(404).json({ message: "No user with that Id exists" });
       }
 
       return res.status(200).json(user);
@@ -54,7 +54,7 @@ module.exports = {
       );
 
       if (!user) {
-        res.status(404).json({ message: "No user with this id!" });
+        res.status(404).json({ message: "No user with this id exists!" });
       }
 
       res.json(user);
@@ -70,7 +70,7 @@ module.exports = {
       });
 
       if (!user) {
-        return res.status(404).json({ message: "No user with that Id" });
+        return res.status(404).json({ message: "No user with that Id exists" });
       }
 
       await Thought.deleteMany({ _id: { $in: user.thoughts } });
@@ -82,15 +82,18 @@ module.exports = {
     }
   },
   async addFriend(req, res) {
+    console.log("addFriend1", { friends: req.body });
     try {
       const friend = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $addToSet: { friends: req.body } },
+        { $addToSet: { friends: req.params.friendId } },
         { runValidators: true, new: true }
       );
-
+      console.log("updated friend", friend);
       if (!friend) {
-        return res.status(404).json({ message: "No friend with this id!" });
+        return res
+          .status(404)
+          .json({ message: "No friend with this id exists!" });
       }
 
       return res.json(friend);
@@ -107,7 +110,9 @@ module.exports = {
       );
 
       if (!friend) {
-        return res.status(404).json({ message: "No friend with that Id" });
+        return res
+          .status(404)
+          .json({ message: "No friend with that Id exists" });
       }
 
       return res.json({ message: "Friend deleted successfully" });
